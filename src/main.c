@@ -1,9 +1,46 @@
-CC=gcc
-CFLAGS=-Wall -Wextra -std=c11 -Iinclude
-SRC := $(wildcard src/*.c)
-TARGET=shellforge
-$(TARGET): $(SRC)
-        $(CC) $(CFLAGS) $(SRC) -lreadline -o $(TARGET)
-clean:
-        rm -f $(TARGET)
-.PHONY: clean
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <readline/history.h>
+#include <readline/readline.h>
+
+int main(void)
+{
+    printf("=====================================\n");
+    printf("Shellforge\n");
+    printf("A Unix Style Shell written in C\n");
+    printf("=====================================\n");
+
+    char *line;
+
+    while (1)
+    {
+        line = readline("shellforge$ ");
+
+        if (line == NULL)
+        {
+            printf("\nGoodbye!\n");
+            break;
+        }
+
+        if (strlen(line) == 0)
+        {
+            free(line);
+            continue;
+        }
+
+        add_history(line);
+
+        if (strcmp(line, "exit") == 0)
+        {
+            free(line);
+            printf("Exiting...\n");
+            break;
+        }
+
+        printf("YOU ENTERED : %s\n", line);
+        free(line);
+    }
+
+    return 0;
+}
