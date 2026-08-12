@@ -1,45 +1,39 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <readline/history.h>
-#include <readline/readline.h>
+#include "../include/lexer.h"
 
 int main(void)
 {
-    printf("=====================================\n");
-    printf("Shellforge\n");
-    printf("A Unix Style Shell written in C\n");
-    printf("=====================================\n");
+    char input[256];
+    token_list_t tokens;
 
-    char *line;
+    printf("==============================\n");
+    printf("        Shellforge\n");
+    printf("A Unix Style Shell written in C\n");
+    printf("==============================\n");
 
     while (1)
     {
-        line = readline("shellforge$ ");
+        printf("shellforge$ ");
+        fflush(stdout);
 
-        if (line == NULL)
+        if (fgets(input, sizeof(input), stdin) == NULL)
+            break;
+
+        input[strcspn(input, "\n")] = '\0';
+
+        if (strcmp(input, "exit") == 0)
         {
-            printf("\nGoodbye!\n");
+            printf("Exiting..\n");
             break;
         }
 
-        if (strlen(line) == 0)
-        {
-            free(line);
+        if (input[0] == '\0')
             continue;
-        }
 
-        add_history(line);
-
-        if (strcmp(line, "exit") == 0)
-        {
-            free(line);
-            printf("Exiting...\n");
-            break;
-        }
-
-        printf("YOU ENTERED : %s\n", line);
-        free(line);
+        lexer_init();
+        lexer_tokenize(input, &tokens);
+        token_print(&tokens);
     }
 
     return 0;
