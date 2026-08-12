@@ -7,3 +7,4 @@ $(TARGET): $(SRC)
 clean:
 	rm -f $(TARGET)
 .PHONY: clean
+# Milestone 2
