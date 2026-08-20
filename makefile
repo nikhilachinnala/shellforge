@@ -8,3 +8,4 @@ clean:
 	rm -f $(TARGET)
 .PHONY: clean
 # Milestone 2
+# Milestone 2.2 completed
