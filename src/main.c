@@ -1,39 +1,67 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "../include/lexer.h"
+
+#include <readline/readline.h>
+#include <readline/history.h>
+
+#include "token.h"
+#include "lexer.h"
+#include "parser.h"
+#include "expand.h"
 
 int main(void)
 {
-    char input[256];
+    char *line;
     token_list_t tokens;
+    pipeline_t pipeline;
 
-    printf("==============================\n");
-    printf("        Shellforge\n");
-    printf("A Unix Style Shell written in C\n");
-    printf("==============================\n");
+    printf("=====================================\n");
+    printf("          Shellforge\n");
+    printf("   A Unix Style Shell written in C\n");
+    printf("=====================================\n");
+
+    lexer_init();
 
     while (1)
     {
-        printf("shellforge$ ");
-        fflush(stdout);
+        line = readline("shellforge$ ");
 
-        if (fgets(input, sizeof(input), stdin) == NULL)
-            break;
-
-        input[strcspn(input, "\n")] = '\0';
-
-        if (strcmp(input, "exit") == 0)
+        if (line == NULL)
         {
-            printf("Exiting..\n");
+            printf("\nGoodbye!\n");
             break;
         }
 
-        if (input[0] == '\0')
+        if (strlen(line) == 0)
+        {
+            free(line);
             continue;
+        }
 
-        lexer_init();
-        lexer_tokenize(input, &tokens);
+        add_history(line);
+
+        token_list_init(&tokens);
+
+        lexer_tokenize(line, &tokens);
+
         token_print(&tokens);
+
+        if (parse(&tokens, &pipeline))
+        {
+            expand_variables(&pipeline);
+            pipeline_print(&pipeline);
+            pipeline_free(&pipeline);
+        }
+
+        if (strcmp(line, "exit") == 0)
+        {
+            free(line);
+            printf("Exiting...\n");
+            break;
+        }
+
+        free(line);
     }
 
     return 0;
