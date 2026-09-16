@@ -9,6 +9,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "expand.h"
+#include "builtin.h"
 
 int main(void)
 {
@@ -42,7 +43,6 @@ int main(void)
         add_history(line);
 
         token_list_init(&tokens);
-
         lexer_tokenize(line, &tokens);
 
         token_print(&tokens);
@@ -51,14 +51,21 @@ int main(void)
         {
             expand_variables(&pipeline);
             pipeline_print(&pipeline);
-            pipeline_free(&pipeline);
-        }
 
-        if (strcmp(line, "exit") == 0)
-        {
-            free(line);
-            printf("Exiting...\n");
-            break;
+            if (pipeline.command_count == 1 &&
+                is_builtin(pipeline.commands[0].argv[0]))
+            {
+                int result = builtin_execute(&pipeline.commands[0]);
+
+                if (result == 2)
+                {
+                    pipeline_free(&pipeline);
+                    free(line);
+                    break;
+                }
+            }
+
+            pipeline_free(&pipeline);
         }
 
         free(line);
