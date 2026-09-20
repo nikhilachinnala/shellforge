@@ -4,5 +4,6 @@
 #include "parser.h"
 
 int execute_external(command_t *command);
+int execute_pipeline(pipeline_t *pipeline);
 
 #endif

@@ -21,6 +21,7 @@ int main(void)
     printf("=====================================\n");
     printf("          Shellforge\n");
     printf("   A Unix Style Shell written in C\n");
+    printf("       Ch. Nikhila(2500032254)\n");
     printf("=====================================\n");
 
     lexer_init();
@@ -66,10 +67,13 @@ int main(void)
                 }
             }
             else if (pipeline.command_count == 1)
-            {
-                execute_external(&pipeline.commands[0]);
-            }
-
+              {
+                 execute_external(&pipeline.commands[0]);
+              }
+            else
+              {
+                 execute_pipeline(&pipeline);
+              }
             pipeline_free(&pipeline);
         }
 
